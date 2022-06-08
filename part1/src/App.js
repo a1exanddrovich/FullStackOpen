@@ -1,64 +1,25 @@
-const Header = (props) => {
-    return (
-        <div>
-            <h1>{props.courseName}</h1>
-        </div>
-    )
-}
+const Hello = ({name, age}) => {
+    const bornYear = () => new Date().getFullYear() - age;
 
-const Total = (props) => {
-    return (
-        <div>
-            <p>Number of exercises {props.parts[0].exercises + props.parts[1].exercises + props.parts[2].exercises}</p>
-        </div>
-    )
-}
-
-const Part = (props) => {
     return (
         <div>
             <p>
-                {props.name} {props.countEx}
+                Hello, {name}! You're {age} years old. So you probably was born in {bornYear()}
             </p>
         </div>
     )
 }
 
-const Content = (props) => {
-    console.log(props)
-    return (
-        <div>
-            <Part name={props.parts[0].name} countEx={props.parts[0].exercises}/>
-            <Part name={props.parts[1].name} countEx={props.parts[1].exercises}/>
-            <Part name={props.parts[2].name} countEx={props.parts[2].exercises}/>
-        </div>
-    )
-}
-
 const App = () => {
-    const course = {
-        name: 'Half Stack application development',
-        parts: [
-            {
-                name: 'Fundamentals of React',
-                exercises: 10
-            },
-            {
-                name: 'Using props to pass data',
-                exercises: 7
-            },
-            {
-                name: 'State of a component',
-                exercises: 14
-            }
-        ]
+    const props = {
+        name: 'Peter',
+        age: 135
     }
 
     return (
         <div>
-            <Header courseName={course.name}/>
-            <Content parts={course.parts}/>
-            <Total parts={course.parts}/>
+            <h1>Greetings</h1>
+            <Hello props={props}/>
         </div>
     )
 }

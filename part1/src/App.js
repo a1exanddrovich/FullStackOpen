@@ -1,27 +1,19 @@
-import React from "react"
+import React from "react";
+
+const Hello = () => {
+    return (
+        <div>
+            <p>Hello world</p>
+        </div>
+    )
+}
 
 const App = () => {
-    const now = new Date()
-    const a = 2
-    const b = 3
-    return React.createElement(
-        "div",
-        null,
-        React.createElement(
-            "p",
-            null,
-            "Today is",
-            now.toDateString()
-        ),
-        React.createElement(
-            "p",
-            null,
-            a,
-            " plus ",
-            b,
-            " is ",
-            a + b
-        )
+    return (
+        <div>
+            <h1>Greetings</h1>
+            <Hello />
+        </div>
     )
 }
 

@@ -1,43 +1,53 @@
 import {useState} from "react";
 
-const Display = ({counter}) => <div>{counter}</div>
-
-const Button = ({action, text}) => (
-    <div>
-        <button onClick={action}>
-            {text}
-        </button>
-    </div>
-)
-
-
-const App = () => {
-    const [counter, setCounter] = useState(0)
-
-    const increment = () => {
-        setCounter(counter + 1)
-        console.log("Clicked + 1")
-    }
-
-    const decrement = () => {
-        setCounter(counter - 1)
-        console.log("Clicked - 1")
-    }
-
-    const makeZero = () => {
-        setCounter(0)
-        console.log("Clicked - 0")
+const History = (props) => {
+    if (props.all.length === 0) {
+        return (
+            <div>
+                The button is used to change the state
+            </div>
+        )
     }
 
     return (
         <div>
-            <Display counter={counter}/>
-            <Button action={increment}
-                    text={"Add one"}/>
-            <Button action={decrement}
-                    text={"Minus one"}/>
-            <Button action={makeZero}
-                    text={"Reset"}/>
+            The history is {props.all.join(" ")}
+        </div>
+    )
+}
+
+const Button = (props) => {
+    return (
+        <button onClick={props.handler}>
+            {props.text}
+        </button>
+    )
+}
+
+const App = () => {
+    const [left, setLeft] = useState(0)
+    const [right, setRight] = useState(0)
+    const [all, setAll] = useState([])
+
+    const handleLeftClick = () => {
+        setAll(all.concat("L"))
+        setLeft(left + 1)
+    }
+
+    const handleRightClick = () => {
+        setAll(all.concat("R"))
+        setRight(right + 1)
+    }
+
+    return (
+        <div>
+            {left}
+            <Button handler={handleLeftClick}
+                    text={"Left"}/>
+            {right}
+            <Button handler={handleRightClick}
+                    text={"Right"}/>
+            <History all={all}/>
         </div>
     )
 }

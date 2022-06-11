@@ -1,0 +1,7 @@
+browser->server: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+
+note over browser:
+It's worth mentioning that the request contains
+header with content-type application/json
+Next, the browser rerenders the content of HTML withput making further GET requests
+end note

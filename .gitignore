@@ -1,1 +1,6 @@
 /.idea
+/part2/.gitignore
+/part2/package.json
+/part2/package-lock.json
+/part2/README.md
+part2/public

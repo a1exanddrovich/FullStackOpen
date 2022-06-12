@@ -98,6 +98,7 @@ const App = () => {
             <Persons persons={persons}/>
         </div>
     )
+    
 }
 
 export default App

@@ -1,4 +1,5 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
+import axios from "axios";
 
 const Filter = ({handler}) => {
     return (
@@ -12,6 +13,7 @@ const Filter = ({handler}) => {
 }
 
 const Persons = ({persons}) => {
+    console.log(persons)
     return (
         <div>
             {
@@ -38,6 +40,17 @@ const InfoAdder = (props) => {
 
 const App = () => {
     const [persons, setPersons] = useState([])
+
+    const hook = () => {
+        axios
+            .get('http://localhost:3001/persons')
+            .then(response => {
+                setPersons(response.data)
+            })
+    }
+
+    useEffect(hook, [])
+
     const [showAll, setShowAll] = useState(persons)
     const [newName, setNewName] = useState("")
     const [newPhone, setNewPhone] = useState("")
@@ -82,9 +95,10 @@ const App = () => {
                        personNameChangeHandler={handlePersonNameChange}
                        phoneChangeHandler={handlePhoneChange}/>
             <h2>Numbers</h2>
-            <Persons persons={showAll}/>
+            <Persons persons={persons}/>
         </div>
     )
+    
 }
 
 export default App

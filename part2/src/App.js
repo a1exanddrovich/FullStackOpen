@@ -1,104 +1,82 @@
-import {useEffect, useState} from "react";
-import axios from "axios";
+import { useState, useEffect } from "react"
+import axios from "axios"
+import Note from "./components/Note"
 
-const Filter = ({handler}) => {
+const App = () => {
+    const [notes, setNotes] = useState([])
+    const [newNote, setNewNote] = useState("")
+    const [showAll, setShowAll] = useState(true)
+
+    useEffect(() => {
+        axios
+            .get("http://localhost:3001/notes")
+            .then(response => {
+                setNotes(response.data)
+            })
+    }, [])
+
+    const toggleImportanceOf = (id) => {
+        const note = notes.find(note => note.id === id)
+        const changedNote = {
+            ...note,
+            important: !note.important
+        }
+
+        axios.get(`http://localhost:3001/notes/${id}`).then(response => console.log(response.data))
+
+        axios
+            .post(`http://localhost:3001/notes/${id}`, changedNote)
+    }
+
+    const addNote = event => {
+        event.preventDefault()
+        const noteObject = {
+            content: newNote,
+            date: new Date().toISOString(),
+            important: Math.random() > 0.5,
+            id: notes.length + 1,
+        }
+
+        axios
+            .post("http://localhost:3001/notes", noteObject)
+            .then(response => {
+                setNotes(notes.concat(response.data))
+                setNewNote("")
+            })
+
+    }
+
+    const handleNoteChange = (event) => {
+        console.log(event.target.value)
+        setNewNote(event.target.value)
+    }
+
+    const notesToShow = showAll
+        ? notes
+        : notes.filter(note => note.important)
+
     return (
         <div>
-            <h2>The filter</h2>
-            <form>
-                Names to be shown: <input type="text" onChange={handler}/>
+            <h1>Notes</h1>
+            <div>
+                <button onClick={() => setShowAll(!showAll)}>
+                    show {showAll ? "important" : "all" }
+                </button>
+            </div>
+            <ul>
+                {notesToShow.map(note =>
+                    <Note key={note.id} note={note} toggleImportance={() => toggleImportanceOf(note.id)}/>
+                )}
+            </ul>
+            <form onSubmit={addNote}>
+                <input
+                    value={newNote}
+                    onChange={handleNoteChange}
+                />
+                <button type="submit">save</button>
             </form>
         </div>
     )
-}
-
-const Persons = ({persons}) => {
-    console.log(persons)
-    return (
-        <div>
-            {
-                persons.map(person => <div key={person.id}>{person.name} - {person.phone}</div>)
-            }
-        </div>
-    )
-}
-
-const InfoAdder = (props) => {
-    return (
-        <form onSubmit={props.addNewPersonHandler}>
-            <div>
-                Name: <input type="text" onChange={props.personNameChangeHandler}/>
-                <br/>
-                Phone: <input type="text" onChange={props.phoneChangeHandler}/>
-            </div>
-            <div>
-                <button type="submit">Add</button>
-            </div>
-        </form>
-    )
-}
-
-const App = () => {
-    const [persons, setPersons] = useState([])
-
-    const hook = () => {
-        axios
-            .get('http://localhost:3001/persons')
-            .then(response => {
-                setPersons(response.data)
-            })
-    }
-
-    useEffect(hook, [])
-
-    const [showAll, setShowAll] = useState(persons)
-    const [newName, setNewName] = useState("")
-    const [newPhone, setNewPhone] = useState("")
-
-    const addNewPerson = (event) => {
-        event.preventDefault()
-        const newPersonObject = {
-            id: persons.length + 1,
-            name: newName,
-            phone: newPhone
-        }
-        if (persons.filter(person => person.name === newPersonObject.name).length === 0) {
-            setPersons(persons.concat(newPersonObject))
-            setNewName("")
-            setNewPhone("")
-        } else {
-            alert(`${newPersonObject.name} is already exists in the list`)
-        }
-    }
-
-    const handlePersonNameChange = (event) => {
-        setNewName(event.target.value)
-    }
-
-    const handlePhoneChange = (event) => {
-        setNewPhone(event.target.value)
-    }
-
-    const filterPersons = (event) => {
-        if (event.target.value !== "") {
-            setShowAll(persons.filter(person => person.name.includes(event.target.value)))
-        } else {
-            setShowAll(persons)
-        }
-    }
-
-    return (
-        <div>
-            <Filter handler={filterPersons}/>
-            <h2>The phonebook</h2>
-            <InfoAdder addNewPersonHandler={addNewPerson}
-                       personNameChangeHandler={handlePersonNameChange}
-                       phoneChangeHandler={handlePhoneChange}/>
-            <h2>Numbers</h2>
-            <Persons persons={persons}/>
-        </div>
-    )
-    
 }
 
 export default App

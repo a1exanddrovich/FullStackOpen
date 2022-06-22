@@ -4,6 +4,7 @@ import axios from "axios";
 const App = () => {
     const [countries, setCountries] = useState([])
     const [countriesToShow, setCountriesToShow] = useState(countries)
+    const apiKey = process.env.REACT_APP_MY_KEY
 
     useEffect(() => {
         axios.get("https://restcountries.com/v3.1/all")
@@ -22,9 +23,7 @@ const App = () => {
         }
     }
 
-    const handleSingleCountry = (country) => {
-        console.log(country.languages)
-
+    const handleSingleCountry = country => {
         return <div>
             <h1>{country.name.common}</h1>
             <p>capital {country.capital}</p>
@@ -33,7 +32,9 @@ const App = () => {
             <ul>
                 {Object.keys(country.languages).map(key => <li key={key}>{key}</li>)}
             </ul>
-            <img src={country.flags.png}/>
+            <img src={country.flags.png} alt="Flag"/>
+            <h2>Weather in {country.capital}</h2>
+
         </div>
     }
 

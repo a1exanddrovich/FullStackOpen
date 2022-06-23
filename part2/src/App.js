@@ -1,6 +1,24 @@
 import {useState, useEffect} from "react"
 import phonebookService from "./service/phonebook"
 
+const Notification = ({message, error}) => {
+    if (message == null) {
+        return null
+    }
+    if (error) {
+        return (
+            <div className="messageStyleError">
+                {message}
+            </div>
+        )
+    }
+    return (
+        <div className="messageStyle">
+            {message}
+        </div>
+    )
+}
+
 const Filter = (props) => {
     return (
         <div>
@@ -45,6 +63,7 @@ const App = () => {
     const [newName, setNewName] = useState("")
     const [newNumber, setNewNumber] = useState("")
     const [personsToShow, setPersonsToShow] = useState(persons)
+    const [message, setMessage] = useState(null)
 
     useEffect(() => {
         phonebookService
@@ -93,6 +112,9 @@ const App = () => {
                     setPersons(actualPersons)
                     setPersonsToShow(actualPersons)
                 })
+            setTimeout(() => {
+                setMessage(`Added ${newName}`)
+            }, 3000)
         } else if (window.confirm(`${newName} is already added to the phonebook. Replace the old number with a new one?`)) {
             const newPersonObject = {
                 id: persons.find(person => newName === person.name).id,
@@ -105,7 +127,9 @@ const App = () => {
                     const actualPersons = persons.filter(person => person.id !== newPersonObject.id).concat(updatedPerson)
                     setPersons(actualPersons)
                     setPersonsToShow(actualPersons)
-                })
+                }, () => setTimeout(() => {
+                    setMessage(`Information of ${newName} has already been removed from server`)
+                }, 3000))
         }
         setNewName("")
         setNewNumber("")
@@ -114,6 +138,7 @@ const App = () => {
     return (
         <div>
             <h2>Phonebook</h2>
+            <Notification message={message} error={false}/>
             <Filter filterValueHandler={handleFilterValue}/>
             <PersonForm newPersonHandler={addNewPerson}
                         changePersonNameHandler={handleChangePersonName}

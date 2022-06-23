@@ -24,11 +24,11 @@ const PersonForm = (props) => {
     )
 }
 
-const Persons = ({personList}) => {
+const Persons = ({personList, deleteMethod}) => {
     return (
         <div>
             {
-                personList.map(person => <PersonDetail key={person.name} singlePerson={person}/>)
+                personList.map(person => <div key={person.name}><PersonDetail singlePerson={person}/><button onClick={() => deleteMethod(person.id, person.name)}>Delete</button></div>)
             }
         </div>
     )
@@ -69,6 +69,15 @@ const App = () => {
 
     const handleChangePersonNumber = event => setNewNumber(event.target.value)
 
+    const deleteById = (id, name) => {
+        if (window.confirm(`Delete ${name} ?`)) {
+            const personsToSet = persons.filter(person => person.id !== id)
+            setPersons(personsToSet)
+            setPersonsToShow(personsToSet)
+            phonebookService.deleteById(id)
+        }
+    }
+
     const addNewPerson = event => {
         event.preventDefault()
         if (isAbsent()) {
@@ -82,13 +91,24 @@ const App = () => {
                 .then(createdPerson => {
                     const actualPersons = persons.concat(createdPerson)
                     setPersons(actualPersons)
-                    setNewName("")
-                    setNewNumber("")
                     setPersonsToShow(actualPersons)
                 })
-        } else {
-            alert(`${newName} already exists in the list`)
+        } else if (window.confirm(`${newName} is already added to the phonebook. Replace the old number with a new one?`)) {
+            const newPersonObject = {
+                id: persons.find(person => newName === person.name).id,
+                name: newName,
+                number: newNumber
+            }
+            phonebookService
+                .updateById(newPersonObject)
+                .then(updatedPerson => {
+                    const actualPersons = persons.filter(person => person.id !== newPersonObject.id).concat(updatedPerson)
+                    setPersons(actualPersons)
+                    setPersonsToShow(actualPersons)
+                })
         }
+        setNewName("")
+        setNewNumber("")
     }
 
     return (
@@ -99,7 +119,7 @@ const App = () => {
                         changePersonNameHandler={handleChangePersonName}
                         changePersonNumberHandler={handleChangePersonNumber}/>
             <h2>Numbers</h2>
-            <Persons personList={personsToShow}/>
+            <Persons personList={personsToShow} deleteMethod={deleteById}/>
         </div>
     )
 }

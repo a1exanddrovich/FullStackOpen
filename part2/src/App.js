@@ -2,10 +2,36 @@ import {useState, useEffect} from "react"
 import Note from "./components/Note"
 import noteService from "./services/notes"
 
+const Notification = ({message}) => {
+    if (message == null) {
+        return null
+    }
+    return (
+        <div className="error">
+            {message}
+        </div>
+    )
+}
+
+const Footer = () => {
+    const footerStyle = {
+        color: 'green',
+        fontStyle: 'italic',
+        fontSize: 16
+    }
+    return (
+        <div style={footerStyle}>
+            <br />
+            <em>Note app, Department of Computer Science, University of Helsinki 2022</em>
+        </div>
+    )
+}
+
 const App = () => {
     const [notes, setNotes] = useState([])
     const [newNote, setNewNote] = useState("A new note")
     const [showAll, setShowAll] = useState(true)
+    const [message, setMessage] = useState(null)
 
     useEffect(() => {
         noteService.getAll()
@@ -46,7 +72,8 @@ const App = () => {
             .update(id, changedNote)
             .then(updatedNote => setNotes(notes.map(note => note.id === id ? updatedNote : note)))
             .catch(error => {
-                alert(`A note with id ${id} has been deleted from server`)
+                setMessage(`A note with id ${id} has been deleted from server`)
+                setTimeout(() => setMessage(null), 5000)
                 setNotes(notes.filter(note => note.id !== id))
             })
     }
@@ -54,6 +81,7 @@ const App = () => {
     return (
         <div>
             <h1>Notes</h1>
+            <Notification message={message}/>
             <button onClick={() => setShowAll(!showAll)}>
                 {
                     showAll ? "Important only" : "All"
@@ -69,6 +97,7 @@ const App = () => {
                 <input type="text" value={newNote} onChange={handleNoteChange}/>
                 <button type="submit">Save</button>
             </form>
+            <Footer/>
         </div>
     )
 }
